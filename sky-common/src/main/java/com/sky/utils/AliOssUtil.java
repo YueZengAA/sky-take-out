@@ -1,9 +1,10 @@
 package com.sky.utils;
 
-import com.aliyun.oss.ClientException;
-import com.aliyun.oss.OSS;
-import com.aliyun.oss.OSSClientBuilder;
-import com.aliyun.oss.OSSException;
+import com.aliyun.oss.*;
+import com.aliyun.oss.common.auth.CredentialsProviderFactory;
+import com.aliyun.oss.common.auth.DefaultCredentialProvider;
+import com.aliyun.oss.common.auth.EnvironmentVariableCredentialsProvider;
+import com.aliyun.oss.common.comm.SignVersion;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -26,10 +27,31 @@ public class AliOssUtil {
      * @param objectName
      * @return
      */
-    public String upload(byte[] bytes, String objectName) {
+    public String upload(byte[] bytes, String objectName) throws com.aliyuncs.exceptions.ClientException {
 
         // 创建OSSClient实例。
-        OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
+       // OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
+
+        // 替换为您的 Bucket 区域
+        String region = "cn-hangzhou";
+
+        // 从环境变量中获取访问凭证。运行本代码示例之前，请先配置环境变量
+        // EnvironmentVariableCredentialsProvider credentialsProvider =
+        //        CredentialsProviderFactory.newEnvironmentVariableCredentialsProvider();
+        DefaultCredentialProvider credentialsProvider =
+                CredentialsProviderFactory.newDefaultCredentialProvider(accessKeyId, accessKeySecret);
+
+        //TODO 阿里云签名不一致，无法上传图片到阿里云
+
+        // 创建 OSSClient 实例
+        ClientBuilderConfiguration clientBuilderConfiguration = new ClientBuilderConfiguration();
+        // 显式声明使用 V4 签名算法
+        clientBuilderConfiguration.setSignatureVersion(SignVersion.V4);
+        OSS ossClient = OSSClientBuilder.create()
+                .endpoint(endpoint)
+                .credentialsProvider(credentialsProvider)
+                .region(region)
+                .build();
 
         try {
             // 创建PutObject请求。

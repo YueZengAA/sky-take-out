@@ -1,5 +1,6 @@
 package com.sky.controller.admin;
 
+import com.aliyuncs.exceptions.ClientException;
 import com.sky.constant.MessageConstant;
 import com.sky.result.Result;
 import com.sky.utils.AliOssUtil;
@@ -37,6 +38,7 @@ public class CommonController {
     public Result<String> upload(MultipartFile file) throws IOException {
         log.info("文件上传：{}", file.getOriginalFilename());
 
+        // TODO 阿里云签名不一致，无法上传图片
         try {
             String originalFilename = file.getOriginalFilename();
             //截取原始文件名后缀
@@ -47,6 +49,8 @@ public class CommonController {
             return Result.success(filePath);
         } catch (IOException e) {
             log.error("文件上传失败： {}", e);
+        } catch (ClientException e) {
+            throw new RuntimeException(e);
         }
         return Result.error(MessageConstant.UPLOAD_FAILED);
     }

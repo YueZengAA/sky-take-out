@@ -11,4 +11,7 @@ sky:
     access-key-id: LTAI5tBS8PouEodVHAWCoQzx
     access-key-secret: IQ1mJa4MGR4TgoisVk5gPQia4WFPKL
     bucket-name: sky--zy
+  redis:
+    host: localhost
+    port: 6379
 
